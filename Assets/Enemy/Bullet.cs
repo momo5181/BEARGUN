@@ -11,7 +11,7 @@ public class Bullet : MonoBehaviour
    if(hitTransform.CompareTag("Player"))
    {
     Debug.Log("hit player");
-    //hitTransform.GetComponent<PlayerHealth>().TakeDamage(10); 結合血條，當子彈擊中玩家扣血
+    hitTransform.GetComponent<PlayerHealth>().TakeDamage(5); //結合血條，當子彈擊中玩家扣血
    }
    Destroy(gameObject);
 

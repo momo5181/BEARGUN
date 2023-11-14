@@ -18,12 +18,12 @@ public class PlayerHealth : MonoBehaviour
     void Update()
     {
          if (Input.GetKeyDown(KeyCode.Space)){
-            TakeDamage(10);
+            TakeDamage(2);
          }
         
     }
-    void TakeDamage(int damage){
-        currentHealth -=damage ;
+    public void TakeDamage(int damage){//調用上述Takedamage(2)，把2轉接成damage變數
+        currentHealth -=damage ;//currenthealth初始直=100,受到傷害-2
         healthBar.SetHealth(currentHealth);
     }
 }
