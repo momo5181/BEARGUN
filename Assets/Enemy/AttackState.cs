@@ -58,6 +58,7 @@ public void Shoot()
   bullet.GetComponent<Rigidbody>().velocity=Quaternion.AngleAxis(Random.Range(-3f,3f),Vector3.up)*shootDirection*40;
   Debug.Log("shoot!");
   shotTimer=0;
+  //我是來測試GITHUB更新的
 }
 
     // Start is called before the first frame update
