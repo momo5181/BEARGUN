@@ -1,11 +1,24 @@
 using UnityEngine;
 using System.Collections;
+using UnityEngine.UI;
 public class M4A1 : MonoBehaviour
 {
     [Header("位置:")]
     public Transform recoilPosition;
     public Transform rotationPoint;
     [Space(10)]
+
+    [Header("Muzzleflash Light Settings")]
+	public Light muzzleflashLight;
+	public float lightDuration = 0.02f;
+
+    [Header("UI Components")]
+	public Text timescaleText;
+	public Text currentWeaponText;
+	public Text currentAmmoText;
+	public Text totalAmmoText;
+    public GameObject lowAmmoUI;
+    public GameObject ReloadUI;
 
     [Header("作用力速度,2返回速度:")]
     public float positionalRecoilSpeed = 8f;
@@ -44,80 +57,115 @@ public class M4A1 : MonoBehaviour
     private int currentAmmo;//當前子彈數量
     public float reloadTime = 2.1f;//換彈時間 
     private bool isreloading = false;
+	[Header("Weapon Sway")]
+	//Enables weapon sway
+	[Tooltip("Toggle weapon sway.")]
+	public bool weaponSway;
+
+	public float swayAmount = 0.02f;
+	public float maxSwayAmount = 0.06f;
+	public float swaySmoothValue = 5.0f;
+
+	private Vector3 initialSwayPosition;
+
+	[System.Serializable]
+	public class prefabs
+	{  
+		[Header("Prefabs")]
+		public Transform casingPrefab;
+	}
+	public prefabs Prefabs;
+	
+	[System.Serializable]
+	public class spawnpoints
+	{  
+		[Header("Spawnpoints")]
+		public Transform casingSpawnPoint;
+	}
+    public spawnpoints Spawnpoints;
+
     [Space(10)]
-    [Header("聲音設置:")]
-    public AudioClip FireEmpty;
-    public AudioSource FireEmptySource;
-    public AudioClip ReloadLeft;
-    public AudioSource ReloadLeftSource;
-    public AudioClip ReloadEmpty;
-    public AudioSource ReloadEmptySource;
-    public AudioClip Fire;
-    public AudioSource FireSource;
-    [Space(10)]
+    [Header("聲音設置")]
+	//Main audio source
+	public AudioSource mainAudioSource;
+	//Audio source used for shoot sound
+	public AudioSource shootAudioSource;
+
+	[System.Serializable]
+	public class soundClips
+	{
+		public AudioClip shootSound;
+		public AudioClip takeOutSound;
+		public AudioClip holsterSound;
+		public AudioClip reloadSoundOutOfAmmo;
+		public AudioClip reloadSoundAmmoLeft;
+		public AudioClip aimSound;
+        public AudioClip ammoSound;
+	}
+    public soundClips SoundClips;
 
     private Recoil Recoil_Script;//Recoil腳本
 
     public Animator animator;//設置動畫控制器
-    void Start()
-    {   
+
+    private bool soundHasPlayed = false;
+
+    private void Start () {
+        muzzleflashLight.enabled = false;
         Recoil_Script = GameObject.Find("CameraRot/CameraRecoil").GetComponent<Recoil>();//抓取Recoil所在物件位置
         currentAmmo = maxAmmo;   
-        FireEmptyF(FireEmpty);
-        ReloadLeftF(ReloadLeft);
-        ReloadEmptyF(ReloadEmpty);
-        FireF(Fire);
-    }
-    private void FireF(AudioClip Fire_clip)
-    {
-        FireSource = gameObject.AddComponent<AudioSource>();
-        FireSource.clip = Fire_clip;
-    } 
-    public void FireSound()
-    {
-        if(FireSource.isPlaying)
-        FireSource.Stop();
-        FireSource.Play();
-    }
+        initialSwayPosition = transform.localPosition;
+		//Set the shoot sound to audio source
+		shootAudioSource.clip = SoundClips.shootSound;
+	}
 
-    private void ReloadEmptyF(AudioClip ReloadEmpty_clip)
-    {
-        ReloadEmptySource = gameObject.AddComponent<AudioSource>();
-        ReloadEmptySource.clip = ReloadEmpty_clip;
-    } 
-    public void ReloadEmptySound()
-    {
-        if(ReloadEmptySource.isPlaying)
-        ReloadEmptySource.Stop();
-        ReloadEmptySource.Play();
-    }
+	private void LateUpdate () {
+		
+		//Weapon sway
+		if (weaponSway == true) 
+		{
+			float movementX = -Input.GetAxis ("Mouse X") * swayAmount;
+			float movementY = -Input.GetAxis ("Mouse Y") * swayAmount;
+			//Clamp movement to min and max values
+			movementX = Mathf.Clamp 
+				(movementX, -maxSwayAmount, maxSwayAmount);
+			movementY = Mathf.Clamp 
+				(movementY, -maxSwayAmount, maxSwayAmount);
+			//Lerp local pos
+			Vector3 finalSwayPosition = new Vector3 
+				(movementX, movementY, 0);
+			transform.localPosition = Vector3.Lerp 
+				(transform.localPosition, finalSwayPosition + 
+					initialSwayPosition, Time.deltaTime * swaySmoothValue);
+		}
+	}
 
-    private void FireEmptyF(AudioClip FireEmpty_clip)
-    {
-        FireEmptySource = gameObject.AddComponent<AudioSource>();
-        FireEmptySource.clip = FireEmpty_clip;
-    } 
-    public void FireEmptySound()
-    {
-        if(FireEmptySource.isPlaying)
-        FireEmptySource.Stop();
-        FireEmptySource.Play();
-    }
-
-    private void ReloadLeftF(AudioClip ReloadLeft_clip)
-    {
-        ReloadLeftSource = gameObject.AddComponent<AudioSource>();
-        ReloadLeftSource.clip = ReloadLeft_clip;
-    }  
-    public void ReloadLeftSound()
-    {
-        if(ReloadLeftSource.isPlaying)
-        ReloadLeftSource.Stop();
-        ReloadLeftSource.Play();
-    }
+    private IEnumerator MuzzleFlashLight () {
+		
+		muzzleflashLight.enabled = true;
+		yield return new WaitForSeconds (lightDuration);
+		muzzleflashLight.enabled = false;
+	}
 
     void Update()
     {   
+        if(currentAmmo<=10)
+        {
+            lowAmmoUI.gameObject.SetActive(true);
+            ReloadUI.gameObject.SetActive(false);
+        }
+        if(currentAmmo==0)
+        {
+            lowAmmoUI.gameObject.SetActive(false);
+            ReloadUI.gameObject.SetActive(true);
+        }
+        if(currentAmmo>10)
+        {
+            lowAmmoUI.gameObject.SetActive(false);
+            ReloadUI.gameObject.SetActive(false);
+        }
+        currentAmmoText.text = currentAmmo.ToString ();
+        
         if(isreloading)
              return;
         if(Input.GetKeyDown("r"))//當前子彈小於零
@@ -130,24 +178,42 @@ public class M4A1 : MonoBehaviour
             nexttimetofire = Time.time + 1f/fireRate;//設置射速
             Shoot();
             GunRecoil();
-            FireSound();
+            if(!aiming)
+            {
+                animator.Play("Fire",0,0f);
+            }
+            else
+            {
+                animator.Play("Fireaim",0,0f);
+            }
+            StartCoroutine (MuzzleFlashLight ());
         }
-        if(Input.GetButton("Fire1")&& Input.GetButton("Fire2")==false&& currentAmmo==0)
+        if(Input.GetButtonDown("Fire1")&& currentAmmo==0)
         {
-            animator.SetBool("shoot",true);
+            mainAudioSource.clip = SoundClips.ammoSound;
+				mainAudioSource.Play ();
+                if( Input.GetButton("Fire2")==false)
+                {
+                animator.Play("FireEmpty",0,0f);
+                }
         }
-        else{
-            animator.SetBool("shoot",false);
-        }
+        
         if(Input.GetButton("Fire2"))
         {
             aiming = true;
+            if (!soundHasPlayed) 
+			{
+				mainAudioSource.clip = SoundClips.aimSound;
+				mainAudioSource.Play ();
+				soundHasPlayed = true;
+			}
             animator.SetBool("Aim",true);
         }
         else
         {
             aiming = false;
             animator.SetBool("Aim",false);
+            soundHasPlayed = false;
         }
     }
     void FixedUpdate()
@@ -180,12 +246,16 @@ public class M4A1 : MonoBehaviour
         Debug.Log("reload");
         if(currentAmmo==0)
         {
+            mainAudioSource.clip = SoundClips.reloadSoundOutOfAmmo;
+			mainAudioSource.Play ();
             reloadTime = 3f;
             animator.SetBool("Reloadempty",true);
             animator.SetBool("Reloading",false);//結束動畫
         }
         else
         {
+            mainAudioSource.clip = SoundClips.reloadSoundAmmoLeft;
+			mainAudioSource.Play ();
             reloadTime = 2.1f;
             animator.SetBool("Reloadempty",false);
             animator.SetBool("Reloading",true);//開始動畫
@@ -198,9 +268,14 @@ public class M4A1 : MonoBehaviour
     }
     void Shoot ()
     {
+        Instantiate (Prefabs.casingPrefab, 
+					Spawnpoints.casingSpawnPoint.transform.position, 
+					Spawnpoints.casingSpawnPoint.transform.rotation);
         Recoil_Script.RecoilFire();//反作用力
 
         currentAmmo--;
+        shootAudioSource.clip = SoundClips.shootSound;
+		shootAudioSource.Play ();
 
         muzzleFlash.Play();//火花特效
         muzzleFlash2.Play();

@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class mouselook : MonoBehaviour
 {
-    public float mousesensitivity =40f;//滑鼠敏感度
+    public float mousesensitivity =10f;//滑鼠敏感度
     public Transform playerbody;//設定玩家身體
     float xRotation=0f;
     // Start is called before the first frame update
@@ -16,8 +16,8 @@ public class mouselook : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        float mouseX =Input.GetAxis("Mouse X")*mousesensitivity*Time.deltaTime;//取得滑鼠x坐標
-        float mouseY =Input.GetAxis("Mouse Y")*mousesensitivity*Time.deltaTime;//取得滑鼠y坐標
+        float mouseX =Input.GetAxis("Mouse X")*mousesensitivity*Time.deltaTime*100;//取得滑鼠x坐標
+        float mouseY =Input.GetAxis("Mouse Y")*mousesensitivity*Time.deltaTime*100;//取得滑鼠y坐標
         playerbody.Rotate(Vector3.up*mouseX);//玩家身體左右旋轉
 
         xRotation -= mouseY;

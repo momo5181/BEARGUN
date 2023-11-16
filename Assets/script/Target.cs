@@ -1,7 +1,4 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-
 
 public class Target : MonoBehaviour
 {
@@ -12,15 +9,10 @@ public class Target : MonoBehaviour
         if(health <= 0f) 
         {
             Die();
-          
-            
         }
     }
-  
-    
     void Die()
     {
         Destroy(gameObject);//銷毀物體
     }
- 
 }
