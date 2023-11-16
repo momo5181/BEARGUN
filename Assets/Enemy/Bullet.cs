@@ -13,7 +13,7 @@ public class Bullet : MonoBehaviour
     Debug.Log("hit player");
     hitTransform.GetComponent<PlayerHealth>().TakeDamage(5); //結合血條，當子彈擊中玩家扣血
    }
-   Destroy(gameObject);
+   Destroy(gameObject,2f);
 
  }
 }

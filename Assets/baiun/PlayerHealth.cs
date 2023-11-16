@@ -17,9 +17,9 @@ public class PlayerHealth : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-         if (Input.GetKeyDown(KeyCode.Space)){
-            TakeDamage(2);
-         }
+         //if (Input.GetKeyDown(KeyCode.Space)){
+          //  TakeDamage(2);
+        // }
         
     }
     public void TakeDamage(int damage){//調用上述Takedamage(2)，把2轉接成damage變數

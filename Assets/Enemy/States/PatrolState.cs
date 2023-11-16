@@ -24,7 +24,7 @@ stateMachine.ChangeState(new AttackState());
  }
  public void PatrolCycle()
  { 
-    if(enemy.Agent.remainingDistance<0.2f)
+    if(enemy.Agent.remainingDistance<0.00001f)
     {
        if(waypointIndex<enemy.patrolWayPoints.Count-1)
          waypointIndex++;
