@@ -53,7 +53,7 @@ public float shotTimer;
 public void Shoot()
 {
   Transform gunbarrel = enemy.gunBarrel;
-  GameObject bullet=GameObject.Instantiate(Resources.Load("bullet")as GameObject, gunbarrel.position,enemy.transform.rotation);
+  GameObject bullet=GameObject.Instantiate(Resources.Load("bullet3 1")as GameObject, gunbarrel.position,enemy.transform.rotation);
   Vector3 shootDirection=(enemy.Player.transform.position-gunbarrel.transform.position).normalized;
   bullet.GetComponent<Rigidbody>().velocity=Quaternion.AngleAxis(Random.Range(-3f,3f),Vector3.up)*shootDirection*100;
   Debug.Log("shoot!");
