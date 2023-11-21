@@ -17,6 +17,7 @@ public class playermove : MonoBehaviour
     public KeyCode runningKey = KeyCode.LeftShift;//為了不跟輸入法衝突
     public Animator animatorM4A1;//設置動畫控制器
     public Animator animatorMP5;
+    public Animator animatorSniper;
 
 
     // Update is called once per frame
@@ -32,18 +33,21 @@ public class playermove : MonoBehaviour
         {
             animatorM4A1.SetBool("run",true);//播放動畫
             animatorMP5.SetBool("run",true);
+            animatorSniper.SetBool("run",true);
             runSpeed=2f;//奔跑開始
         }
         else
         {
             animatorM4A1.SetBool("run",false);//結束動畫
             animatorMP5.SetBool("run",false);
+            animatorSniper.SetBool("run",false);
             runSpeed =1;
         }
         float x= Input.GetAxis("Horizontal");//取得角色左右移動餐數
         float z= Input.GetAxis("Vertical");//取得角色前後移動參數 
         animatorM4A1.SetFloat("movement",Mathf.Abs(x) + Mathf.Abs(z));//播放動畫
         animatorMP5.SetFloat("movement",Mathf.Abs(x) + Mathf.Abs(z));
+        animatorSniper.SetFloat("movement",Mathf.Abs(x) + Mathf.Abs(z));
 
         Vector3 move = transform.right*x+transform.forward*z;//角色移動變數
         controller.Move(move*speed*Time.deltaTime*runSpeed);//角色移動添加到身體上

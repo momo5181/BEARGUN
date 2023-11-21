@@ -63,7 +63,7 @@ public class MP5 : MonoBehaviour
 	public bool weaponSway;
 
 	public float swayAmount = 0.02f;
-	public float maxSwayAmount = 0.06f;
+	public float maxSwayAmount = 0.44f;
 	public float swaySmoothValue = 5.0f;
 
 	private Vector3 initialSwayPosition;
