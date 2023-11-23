@@ -8,6 +8,7 @@ public class Bullet : MonoBehaviour
  {
  
    Transform hitTransform=collision.transform;
+   
    if(hitTransform.CompareTag("Player"))
    {
     Debug.Log("hit player");

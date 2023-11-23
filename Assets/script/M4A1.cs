@@ -52,6 +52,7 @@ public class M4A1 : MonoBehaviour
     public ParticleSystem muzzleFlash;//指定槍枝火花特效
     public ParticleSystem muzzleFlash2;
     public GameObject impactEffect;//指定子彈接觸到地面效果
+    public GameObject impactEffect2;
     private float nexttimetofire = 0f;//設定觸發連續射擊時間
     public int maxAmmo = 32;//子彈數量
     private int currentAmmo;//當前子彈數量
@@ -287,6 +288,8 @@ public class M4A1 : MonoBehaviour
         if(target != null)
         {
             target.TakeDamage(damage);//繼續執行Target裡面的TakeDamage變數
+            GameObject impactGo2 =Instantiate(impactEffect2, hit.point , Quaternion.LookRotation(hit.normal));//子彈接觸到地面效果
+            Destroy(impactGo2, 2f);
         }
         GameObject impactGo =Instantiate(impactEffect, hit.point , Quaternion.LookRotation(hit.normal));//子彈接觸到地面效果
         Destroy(impactGo, 2f);//兩秒後清除子彈接觸到地面效果     

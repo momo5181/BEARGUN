@@ -4,23 +4,19 @@ using UnityEngine;
 
 public class light : MonoBehaviour
 {
-    Light mylight;
-    // Start is called before the first frame update
-    void Start()
-    {
-      mylight = GetComponent<Light>();   
-    }
+    public Light mylight;
+
 
     // Update is called once per frame
     void Update()
     {
-        if(Input.GetButton("Fire1"))
-        {
-            mylight.enabled = !mylight.enabled;
-        }
-        else
+        if(Input.GetKeyDown("f")&& mylight.enabled==true)
         {
             mylight.enabled = false;
+        }
+        else if(Input.GetKeyDown("f")&& mylight.enabled==false) 
+        {
+            mylight.enabled = true;
         }
         
     }
